@@ -33,3 +33,20 @@ yarn-error.*
 
 # typescript
 *.tsbuildinfo
+
+### VS Code ###
+.vscode/
+
+# Android/IntelliJ
+#
+build/
+.idea
+.gradle
+local.properties
+*.iml
+*.hprof
+.cxx/
+*.keystore
+!debug.keystore
+
+coverage/
