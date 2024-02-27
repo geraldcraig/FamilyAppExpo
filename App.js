@@ -18,6 +18,7 @@ import SignupForm from "./screens/SignupForm";
 import TextInputExample from "./screens/TextInputExample";
 import ButtonExample from "./screens/ButtonExample";
 import SignInForm from "./components/SignInForm";
+import TextInputScreen from "./components/TextInput";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -52,7 +53,7 @@ export default function App() {
                     </>
                 ) : (
                     <>
-                        <Stack.Screen name="SignIn" component={SignInForm} />
+                        <Stack.Screen name="SignIn" component={TextInputScreen} />
                         <Stack.Screen name="SignUp" component={SignupForm} />
                     </>
                 )}

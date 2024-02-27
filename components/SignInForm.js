@@ -1,7 +1,25 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { Feather, FontAwesome } from '@expo/vector-icons';
-import {StyleSheet, Text, TextInput, TouchableOpacity, View} from "react-native";
+import {Button, StyleSheet, Text, TextInput, TouchableOpacity, View} from "react-native";
 import colors from '../constants/colors';
+import firebase from 'firebase/app';
+import 'firebase/auth';
+import firebaseConfig from '../firebaseConfig';
+import PageContainer from "./PageContainer";
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+
+const auth = getAuth();
+createUserWithEmailAndPassword(auth, email, password)
+    .then((userCredential) => {
+        // Signed up
+        const user = userCredential.user;
+        // ...
+    })
+    .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        // ..
+    });
 
 const Input = props => {
     return <View style={styles.container}>
@@ -28,8 +46,8 @@ const Input = props => {
 
 const SubmitButton = props => {
 
-    const enabledBgColor = props.color || "#32d48e";
-    const disabledBgColor = "#bdc3c7";
+    const enabledBgColor = props.color || colors.primary;
+    const disabledBgColor = colors.lightGrey;
     const bgColor = props.disabled ? disabledBgColor : enabledBgColor;
 
     return <TouchableOpacity
@@ -45,24 +63,44 @@ const SubmitButton = props => {
 };
 
 const SignInForm = props => {
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+
+    const handleSignup = async () => {
+        try {
+            const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
+            console.log('User registered successfully:', userCredential.user.uid);
+            // You can add additional logic here, such as navigating to another screen
+        } catch (error) {
+            console.error('Error signing up:', error.message);
+        }
+        console.log('Signup:', { email, password });
+    };
     return (
         <>
             <Input
                 label="Email"
+                onChangeText={setEmail}
+                value={email}
                 icon="mail"
                 iconPack={Feather} />
 
             <Input
                 label="Password"
+                onChangeText={setPassword}
+                value={password}
+                secureTextEntry
                 icon="lock"
                 iconPack={Feather} />
 
-            <SubmitButton
-                title="Sign up"
-                onPress={() => console.log("Button pressed")}
-                style={{ marginTop: 20 }}/>
+            {/*<SubmitButton*/}
+            {/*    title="Sign up"*/}
+            {/*    onPress={() => console.log("Button pressed")}*/}
+            {/*    style={{ marginTop: 20 }}/>*/}
+            <Button title="Sign Up" onPress={handleSignup} />
         </>
     )
+
 };
 
 const styles = StyleSheet.create({
@@ -109,6 +147,16 @@ const styles = StyleSheet.create({
         color: 'red',
         fontSize: 13,
         fontFamily: 'regular',
+        letterSpacing: 0.3
+    },
+    linkContainer: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginVertical: 15
+    },
+    link: {
+        color: colors.blue,
+        fontFamily: 'medium',
         letterSpacing: 0.3
     }
 });
