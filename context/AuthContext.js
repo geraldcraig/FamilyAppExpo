@@ -17,6 +17,33 @@ export const authReducer = (state, action) => {
     }
 }
 
+export const ChatContext = createContext(null);
+
+export const chatReducer = (state, action) => {
+    switch (action.type) {
+        case 'ADD_CHAT':
+            return { ...state, chats: [...state.chats, action.payload] }
+        case 'REMOVE_CHAT':
+            return { ...state, chats: state.chats.filter(chat => chat.id !== action.payload) }
+        default:
+            return state
+    }
+}
+
+export const ChatContextProvider = ({ children }) => {
+    const [state, dispatch] = useReducer(chatReducer, {
+        chats: []
+    })
+
+    console.log('ChatContext state:', state)
+
+    return (
+        <ChatContext.Provider value={{ ...state, dispatch }}>
+            { children }
+        </ChatContext.Provider>
+    )
+}
+
 export const AuthContextProvider = ({ children }) => {
     const [state, dispatch] = useReducer(authReducer, {
         user: null,
