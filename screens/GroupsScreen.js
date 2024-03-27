@@ -1,18 +1,9 @@
-import React from "react";
 import {StyleSheet, Text, View} from "react-native";
 
-// function Template() {
-//     return (
-//         <View style={styles.container}>
-//             <Text>Template</Text>
-//         </View>
-//     );
-// }
-
-const Template = () => {
+const GroupsScreen = () => {
     return (
         <View style={styles.container}>
-            <Text>Template</Text>
+            <Text>Groups Screen</Text>
         </View>
     );
 }
@@ -25,4 +16,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default Template;
+export default GroupsScreen;

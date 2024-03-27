@@ -3,14 +3,10 @@ import { Button, StyleSheet, TextInput, View } from "react-native";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { child, getDatabase, ref, set } from "firebase/database";
 import { auth } from '../firebaseConfig';
-import { useAuthContext } from "../hooks/useAuthContext";
 
-const SignUpScreen = ({ navigation }) => {
-    const [firstName, setFirstName] = useState('');
-    const [lastName, setLastName] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const { dispatch } = useAuthContext();
+const ChatList = ({ navigation }) => {
+    const [message, setMessage] = useState('');
+
 
     // const handleSignUp = () => {
     //     createUserWithEmailAndPassword(auth, email, password)
@@ -29,32 +25,27 @@ const SignUpScreen = ({ navigation }) => {
 
     const handleSignUp = async () => {
         try {
-            const result = await createUserWithEmailAndPassword(auth, email, password);
-            const { uid } = result.user;
-            dispatch({ type: 'LOGIN', payload: result.user });
+            // const result = await createUserWithEmailAndPassword(auth, email, password);
+            // const { uid } = result.user;
 
-            const userData = await createUser(firstName, lastName, email, uid);
+            const userData = await createMessage(message);
 
-            console.log('Signed up successfully:', result);
+            console.log('Message sent successfully:');
             console.log("UserData: ", userData);
-            navigation.replace('Home');
+            // navigation.replace('Home');
         } catch (error) {
             const errorMessage = error.message;
             console.log('Sign up error:', errorMessage)
         }
     }
 
-    const createUser = async (firstName, lastName, email, userId) => {
+    const createMessage = async (message) => {
         const userData = {
-            firstName: firstName,
-            lastName: lastName,
-            email: email,
-            userId: userId,
+            message: message,
             signUpDate: new Date().toISOString(),
-            status: 'Hey there!'
         };
         const dbRef = ref(getDatabase());
-        const childRef = child(dbRef, `users/${userId}`);
+        const childRef = child(dbRef, `chats/${message}`);
         await set(childRef, userData);
         return userData;
     };
@@ -111,4 +102,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default SignUpScreen;
+export default ChatList;

@@ -4,7 +4,7 @@ import { ref, onValue } from "firebase/database";
 import { db } from '../firebaseConfig';
 import userImage from "../assets/images/userImage.jpeg";
 
-const ChatListScreen = ({ navigation }) => {
+const ContactListScreen = ({ navigation }) => {
     const [userData, setUserData] = useState([]);
 
     useEffect(() => {
@@ -12,7 +12,7 @@ const ChatListScreen = ({ navigation }) => {
     }, []);
 
     function fetchUserData() {
-        const dbRef = ref(db, 'chats/');
+        const dbRef = ref(db, 'users/');
         onValue(dbRef, (snapshot) => {
             const data = snapshot.val();
             if (data) {
@@ -34,15 +34,16 @@ const ChatListScreen = ({ navigation }) => {
 
     const renderItem = ({ item }) => (
         <Pressable onPress={() => handleChatPress(item.user)} style={styles.chatContainer}>
-            <Image
-                style={styles.image}
-                source={userImage}
-            />
-            <View style={styles.chatInfo}>
-                <Text style={styles.userName}>{item.email}</Text>
-                <Text style={styles.lastMessage}>{item.lastMessage}</Text>
+            <View style={styles.contactContainer}>
+                <Image
+                    style={styles.image}
+                    source={userImage}
+                />
+                <View style={styles.contactInfo}>
+                    <Text style={styles.contactName}>{item.firstName} {item.lastName}</Text>
+                    <Text style={styles.contactStatus}>{item.status}</Text>
+                </View>
             </View>
-            <Text style={styles.timestamp}>{item.timestamp}</Text>
         </Pressable>
     );
 
@@ -56,32 +57,28 @@ const ChatListScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-    chatContainer: {
+    contactContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'space-between',
         padding: 10,
         borderBottomWidth: 1,
         borderBottomColor: '#ccc',
     },
-    userImage: {
+    contactImage: {
         width: 50,
         height: 50,
         borderRadius: 25,
         marginRight: 10,
     },
-    chatInfo: {
+    contactInfo: {
         flex: 1,
     },
-    userName: {
+    contactName: {
         fontSize: 16,
         fontWeight: 'bold',
     },
-    lastMessage: {
+    contactStatus: {
         color: '#555',
-    },
-    timestamp: {
-        color: '#777',
     },
     image: {
         borderRadius: 50,
@@ -93,4 +90,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default ChatListScreen;
+export default ContactListScreen;

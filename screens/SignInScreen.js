@@ -1,108 +1,101 @@
-import React, { useState, useEffect } from 'react';
-import {
-    View, TextInput, TouchableOpacity,
-    Text, StyleSheet, Button
-} from 'react-native';
+import { useState, createContext } from "react";
+import { Button, StyleSheet, TextInput, View } from "react-native";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from '../firebaseConfig';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useAuthContext } from "../hooks/useAuthContext";
+
 
 const SignInScreen = ({ navigation }) => {
-
-    // State variables to store form inputs,
-    // errors, and form validity
-    const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [errors, setErrors] = useState({});
-    const [isFormValid, setIsFormValid] = useState(false);
+    const { dispatch } = useAuthContext();
 
-    useEffect(() => {
-
-        // Trigger form validation when name,
-        // email, or password changes
-        validateForm();
-    }, [name, email, password]);
-
-    const validateForm = () => {
-        let errors = {};
-
-        // Validate name field
-        if (!name) {
-            errors.name = 'Name is required.';
-        }
-
-        // Validate email field
-        if (!email) {
-            errors.email = 'Email is required.';
-        } else if (!/\S+@\S+\.\S+/.test(email)) {
-            errors.email = 'Email is invalid.';
-        }
-
-        // Validate password field
-        if (!password) {
-            errors.password = 'Password is required.';
-        } else if (password.length < 6) {
-            errors.password = 'Password must be at least 6 characters.';
-        }
-
-        // Set the errors and update form validity
-        setErrors(errors);
-        setIsFormValid(Object.keys(errors).length === 0);
+    const handleSignIn = () => {
+        signInWithEmailAndPassword(auth, email, password)
+            .then((userCredential) => {
+                const user = userCredential.user;
+                dispatch({ type: 'LOGIN', payload: userCredential.user });
+                // const userId = user.uid;
+                console.log('Signed in successfully:', user);
+                navigation.replace('Home');
+            })
+            .catch((error) => {
+                const errorMessage = error.message;
+                console.log('Sign in error:', errorMessage)
+            });
     };
 
-    const handleSubmit = () => {
-        if (isFormValid) {
+    AsyncStorage.setItem('email', 'john');
 
-            // Form is valid, perform the submission logic
-            console.log('Form submitted successfully!');
-        } else {
-
-            // Form is invalid, display error messages
-            console.log('Form has errors. Please correct them.');
+    // storing data
+    const storeUser = async (value) => {
+        try {
+            console.log('store value:', value);
+            await AsynStorage.setItem("user", JSON.stringify(value));
+        } catch (error) {
+            console.log(error);
         }
     };
+
+    // getting data
+    const getUser = async () => {
+        try {
+            const userData = JSON.parse(await AsynStorage.getItem("user"))
+            console.log('user data:', userData);
+            console.log('user', user);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    storeUser('john');
+    getUser();
+
+
+    // const handleSignIn = async () => {
+    //     try {
+    //         const result = await signInWithEmailAndPassword(auth, email, password);
+    //         console.log('Signed in successfully:', result.user.uid);
+    //         navigation.replace('Home');
+    //         console.log(result);
+    //     } catch (error) {
+    //         const errorMessage = error.message;
+    //         console.log('Sign in error:', errorMessage)
+    //     }
+    // }
 
     return (
         <View style={styles.container}>
             <TextInput
                 style={styles.input}
-                placeholder="Name"
-                value={name}
-                onChangeText={setName}
-            />
-            <TextInput
-                style={styles.input}
                 placeholder="Email"
-                value={email}
-                onChangeText={setEmail}
+                autoCapitalize="none"
+                onChangeText={(newText) => setEmail(newText)}
+                defaultValue={email}
             />
             <TextInput
                 style={styles.input}
                 placeholder="Password"
-                value={password}
-                onChangeText={setPassword}
                 secureTextEntry
+                autoCapitalize="none"
+                onChangeText={(newText) => setPassword(newText)}
+                defaultValue={password}
             />
-            <TouchableOpacity
-                style={[styles.button, { opacity: isFormValid ? 1 : 0.5 }]}
-                disabled={!isFormValid}
-                onPress={handleSubmit}
-            >
-                <Text style={styles.buttonText}>Submit</Text>
-
-            </TouchableOpacity>
-
-            <Button title="Go to SignUp" onPress={() => navigation.navigate('SignUp')} />
-
-            {/* Display error messages */}
-            {Object.values(errors).map((error, index) => (
-                <Text key={index} style={styles.error}>
-                    {error}
-                </Text>
-            ))}
+            <Button title="Submit" onPress={handleSignIn} />
+            <Button title="Go to Sign Up" onPress={() => navigation.replace('Sign Up')} />
         </View>
     );
+}
+
+export const userData = async () => {
+    try {
+        await AsyncStorage.setItem('email', email);
+    } catch (error) {
+        console.log('Error saving data:', error);
+    }
 };
 
-// Styles for the components
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -117,25 +110,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
         borderRadius: 8,
         fontSize: 16,
-    },
-    button: {
-        backgroundColor: 'green',
-        borderRadius: 8,
-        paddingVertical: 10,
-        alignItems: 'center',
-        marginTop: 16,
-        marginBottom: 12,
-    },
-    buttonText: {
-        color: '#fff',
-        fontWeight: 'bold',
-        fontSize: 16,
-    },
-    error: {
-        color: 'red',
-        fontSize: 20,
-        marginBottom: 12,
-    },
+    }
 });
 
 export default SignInScreen;

@@ -1,65 +1,34 @@
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { ImageBackground, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { Ionicons } from '@expo/vector-icons';
-import {child, getDatabase, ref, set} from "firebase/database";
+import {child, getDatabase, ref, get} from "firebase/database";
 import { useAuthContext} from "../hooks/useAuthContext";
 
-const ChatScreen = () => {
-
-    // const [messageText, setMessageText] = useState("");
-    //
-    // const sendMessage = useCallback(() => {
-    //     setMessageText("");
-    // }, [messageText]);
+const Chat = () => {
 
     const [message, setMessage] = useState('');
     const { user } = useAuthContext();
+    const uid = user.uid;
 
-    const handleSignUp = async () => {
-        try {
-            // const result = await createUserWithEmailAndPassword(auth, email, password);
-            const { uid } = user;   
+    const handleSignUp = () => {
+        const db = getDatabase();
+        const usersRef = ref(db, 'users');
+        const userRef = child(usersRef, uid);
 
-            const getUserData = async () => {
-                const dbRef = ref(getDatabase());
-                const userRef = child(dbRef, `users/${uid}`);
-                const snapshot = await get(userRef);
-                if (snapshot.exists()) {
-                    const userData = snapshot.val();
-                    console.log('User data:', userData);
-                    return userData;
-                } else {
-                    console.log('User not found');
-                    return null;
-                }
-            };
-
-            const userData = await getUserData();
-
-        
-
-            // const userData = await createMessage(message);
-
-            console.log('Message sent successfully:');
-            console.log("UserData: ", userData);
-            // navigation.replace('Home');
-        } catch (error) {
-            const errorMessage = error.message;
-            console.log('Sign up error:', errorMessage)
-        }
-    }
-
-    const createMessage = async (message) => {
-        const userData = {
-            uid: user.uid,
-            email: user.email,
-            lastMessage: message,
-            timestamp: new Date().toISOString(),
-        };
-        const dbRef = ref(getDatabase());
-        const childRef = child(dbRef, `chats/${message}`);
-        await set(childRef, userData);
-        return userData;
+        get(userRef).then((snapshot) => {
+            if (snapshot.exists()) {
+                const userDetails = snapshot.val();
+                console.log(userDetails);
+                const { firstName, lastName } = userDetails;
+                console.log(`User: ${firstName} ${lastName}`);
+                console.log(userDetails.email)
+                console.log(userDetails.status)
+            } else {
+                console.log("User not found");
+            }
+        }).catch((error) => {
+            console.error(error);
+        });
     };
 
     return (
@@ -126,4 +95,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default ChatScreen;
+export default Chat;

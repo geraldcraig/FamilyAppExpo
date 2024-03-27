@@ -1,18 +1,27 @@
-// Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+import { getAuth, getReactNativePersistence, initializeAuth } from "firebase/auth";
+import { getDatabase } from "firebase/database";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getStorage } from "firebase/storage";
 
-// Your web app's Firebase configuration
 const firebaseConfig = {
-    apiKey: "AIzaSyBwY2vPoHEcmGQHFU2PJ5D_j5kAGiIyUlc",
-    authDomain: "family-app-test-be246.firebaseapp.com",
-    databaseURL: "https://family-app-test-be246-default-rtdb.europe-west1.firebasedatabase.app",
-    projectId: "family-app-test-be246",
-    storageBucket: "family-app-test-be246.appspot.com",
-    messagingSenderId: "224105352319",
-    appId: "1:224105352319:web:1a05625ba631daa81e434a"
-};
+    apiKey: "AIzaSyCbPsbyAtCkPPT1LU7wMIknMC0CP2pmRmg",
+    authDomain: "family-app-14d7b.firebaseapp.com",
+    databaseURL: "https://family-app-14d7b-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "family-app-14d7b",
+    storageBucket: "family-app-14d7b.appspot.com",
+    messagingSenderId: "293818915401",
+    appId: "1:293818915401:web:0b6a5ca5fb39407a03fd98"
+  };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
+
+initializeAuth(app, {
+    persistence: getReactNativePersistence(AsyncStorage)
+});
+
+export const auth = getAuth();
+
+export const db = getDatabase();
+
+export const storage = getStorage();
