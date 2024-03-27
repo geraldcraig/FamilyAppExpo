@@ -1,8 +1,38 @@
 import { useState } from "react";
 import { ImageBackground, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { Ionicons } from '@expo/vector-icons';
-import {child, getDatabase, ref, get} from "firebase/database";
+import { child, getDatabase, ref, get, push, set, update } from "firebase/database";
 import { useAuthContext} from "../hooks/useAuthContext";
+import { auth, db } from '../firebaseConfig';
+
+// Get current user's uid
+const uid = auth.currentUser.uid;
+
+// Get a reference to the database service
+const database = getDatabase();
+
+// Create a new chat id
+const newChatRef = push(ref(database, 'chats'));
+
+// Write the new chat's data
+set(newChatRef, {
+    uid: uid,
+    // other chat data...
+});
+
+// Get a reference to the chat you want to update
+const updateChatRef = ref(db, 'chats/' + chatId);
+
+// Update the chat data
+update(updateChatRef, {
+  // fields you want to update...
+});
+
+// Get a reference to the chat you want to delete
+const deleteChatRef = ref(db, 'chats/' + chatId);
+
+// Delete the chat
+remove(deleteChatRef);
 
 const Chat = () => {
 
